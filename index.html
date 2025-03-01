@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNA's Mini Crossword</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f8f8f8;
+    }
+    h1 {
+      text-align: center;
+      color: #000;
+      margin-bottom: 30px;
+    }
+    .crossword-container {
+      display: grid;
+      grid-template-columns: repeat(13, 40px);
+      grid-gap: 1px;
+      margin: 0 auto 30px;
+      width: fit-content;
+    }
+    .cell {
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      border: 1px solid #000;
+      display: flex;
+      position: relative;
+      justify-content: center;
+      align-items: center;
+    }
+    .cell.active {
+      background-color: #e6f2ff;
+    }
+    .black {
+      background-color: black;
+    }
+    .number {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      font-size: 10px;
+    }
+    .clues {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+    .clue-section {
+      width: 48%;
+    }
+    h3 {
+      border-bottom: 2px solid #000;
+      padding-bottom: 5px;
+    }
+    .clue-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .clue-list li {
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .note {
+      margin-top: 40px;
+      text-align: center;
+      font-style: italic;
+      font-size: 24px;
+    }
+    .special-title {
+      font-family: 'Times New Roman', Times, serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .special-title h1 {
+      margin: 0;
+    }
+    .dedicated {
+      text-align: center;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+    .audio-controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .audio-button {
+      font-size: 24px;
+      margin: 0 10px;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    input {
+      width: 90%;
+      height: 90%;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-size: 20px;
+      text-transform: uppercase;
+    }
+    input:focus {
+      outline: none;
+    }
+    .incorrect::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to top right, transparent calc(50% - 1px), #ff0000, transparent calc(50% + 1px));
+      pointer-events: none;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    button {
+      margin: 0 5px;
+      padding: 8px 12px;
+      cursor: pointer;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #e0e0e0;
+    }
+    #surprise-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #qr-code {
+      width: 250px;
+      height: 250px;
+      margin-bottom: 30px;
+    }
+    .surprise-message {
+      color: white;
+      font-size: 24px;
+      text-align: center;
+      max-width: 600px;
+      margin-bottom: 30px;
+    }
+    .heart-animation {
+      position: absolute;
+      font-size: 20px;
+      color: #ff4d4d;
+      animation: float 6s ease-in infinite;
+      opacity: 0;
+    }
+    @keyframes float {
+      0% {
+        transform: translateY(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh);
+        opacity: 0;
+      }
+    }
+    #close-surprise {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .success-message {
+      text-align: center;
+      color: green;
+      font-weight: bold;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="special-title">
+    <h1>DNA's Mini Crossword</h1>
+  </div>
+  <p class="dedicated">For Addison, with love</p>
+  
+  <div class="audio-controls">
+    <audio id="background-music" loop>
+      <source src="https://cdnjs.cloudflare.com/ajax/libs/musicisalso/1.0.0/careless-whisper.mp3" type="audio/mp3">
+      Your browser does not support the audio element.
+    </audio>
+    <button class="audio-button" onclick="document.getElementById('background-music').play()">🔊</button>
+    <button class="audio-button" onclick="document.getElementById('background-music').pause()">🔇</button>
+  </div>
+  
+  <div class="controls">
+    <button id="check-button">Check</button>
+    <button id="reveal-button">Reveal</button>
+    <button id="clear-button">Clear</button>
+  </div>
+  
+  <div class="crossword-container" id="crossword">
+    <!-- Cells will be dynamically generated by JavaScript -->
+  </div>
+
+  <div class="success-message" id="success-message">
+    You've completed the puzzle! Something special is coming...
+  </div>
+
+  <div class="clues">
+    <div class="clue-section">
+      <h3>ACROSS</h3>
+      <ol class="clue-list">
+        <li><strong>1.</strong> Cute, but also a mfer.</li>
+        <li><strong>3.</strong> Where we had our first kiss and got together.</li>
+        <li><strong>5.</strong> Where we had sex for the first time (and I lost my virginity).</li>
+        <li><strong>6.</strong> What initially brought us together.</li>
+        <li><strong>8.</strong> What we love watching together, especially cuddling.</li>
+        <li><strong>9.</strong> I just want one more. I promise you won't regret it.</li>
+      </ol>
+    </div>
+    <div class="clue-section">
+      <h3>DOWN</h3>
+      <ol class="clue-list">
+        <li><strong>1.</strong> Where we met.</li>
+        <li><strong>2.</strong> A fun math game we discovered in San Luis Obispo.</li>
+        <li><strong>4.</strong> Name of the first cart you gifted me, and what you are to me.</li>
+        <li><strong>7.</strong> Where we often smoke momentarily.</li>
+        <li><strong>10.</strong> What initially brought us together.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="note">
+    <p>❤️</p>
+  </div>
+  
+  <!-- Surprise container with QR code reveal -->
+  <div id="surprise-container">
+    <div class="surprise-message">
+      Congratulations! You solved our puzzle. Scan the QR code to see something special...
+    </div>
+    <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://iloveaddison.xyz/surprise.html" alt="QR Code">
+    <button id="close-surprise">Close</button>
+  </div>
+  
+  <script>
+    // Crossword puzzle data
+    const puzzleData = [
+      // Define rows (0 = black cell, '' = empty cell, letter = solution)
+      ['P', 'O', 'T', 0, 'N', 'E', 'R', 'D', 'L', 'E', '', 0, 0],
+      ['B', 0, 'S', 'A', 'N', 'F', 'R', 'A', 'N', 'C', 'I', 'S', 'C'],
+      ['R', 0, 'F', 'I', 'N', 'L', 'A', 'N', 'D', 0, 0, 0, 'O'],
+      ['A', 0, 'I', 0, 0, 0, 'W', 'E', 'E', 'D', 0, 0, 'M'],
+      [0, 0, 'N', 0, 'C', 'R', 'A', 'C', 'K', 0, 0, 0, 'I'],
+      [0, 'R', 'E', 'E', 'L', 'S', '', 0, 0, 0, 0, 0, 'A'],
+      ['C', 'H', 'A', 'N', 'C', 'E', 0, 0, 0, 'W', 'E', 'E', 'D']
+    ];
+    
+    // Create crossword grid
+    const crosswordEl = document.getElementById('crossword');
+    const inputs = [];
+    
+    for (let row = 0; row < puzzleData.length; row++) {
+      for (let col = 0; col < puzzleData[row].length; col++) {
+        const cellValue = puzzleData[row][col];
+        const cell = document.createElement('div');
+        cell.className = cellValue === 0 ? 'cell black' : 'cell';
+        
+        // Add cell numbers
+        if (
+          (row === 0 && col === 0) || // 1-Across/Down (POTATO/BRAVAS)
+          (row === 0 && col === 4) || // 2-Down (NERDLE)
+          (row === 1 && col === 2) || // 3-Across (SANFRANCISCO)
+          (row === 1 && col === 12) || // 4-Down (MIAMOR)
+          (row === 2 && col === 2) || // 5-Across (FINLAND)
+          (row === 3 && col === 6) || // 6-Across (WEED)
+          (row === 4 && col === 4) || // 7-Down (CRACKHEADSPOT)
+          (row === 5 && col === 1) || // 8-Across (REELS)
+          (row === 6 && col === 0) || // 9-Across (CHANCE)
+          (row === 6 && col === 9)    // 10-Down (WEED)
+        ) {
+          const number = document.createElement('span');
+          number.className = 'number';
+          if (row === 0 && col === 0) number.textContent = '1';
+          if (row === 0 && col === 4) number.textContent = '2';
+          if (row === 1 && col === 2) number.textContent = '3';
+          if (row === 1 && col === 12) number.textContent = '4';
+          if (row === 2 && col === 2) number.textContent = '5';
+          if (row === 3 && col === 6) number.textContent = '6';
+          if (row === 4 && col === 4) number.textContent = '7';
+          if (row === 5 && col === 1) number.textContent = '8';
+          if (row === 6 && col === 0) number.textContent = '9';
+          if (row === 6 && col === 9) number.textContent = '10';
+          cell.appendChild(number);
+        }
+        
+        // Add input for playable cells
+        if (cellValue !== 0) {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.maxLength = 1;
+          input.dataset.row = row;
+          input.dataset.col = col;
+          input.dataset.solution = cellValue;
+          
+          // Auto-move to next cell on input
+          input.addEventListener('input', function(e) {
+            if (this.value) {
+              this.value = this.value.toUpperCase();
+              // Find next input in the same row
+              const nextInput = inputs.find(inp => 
+                inp.dataset.row === this.dataset.row && 
+                parseInt(inp.dataset.col) === parseInt(this.dataset.col) + 1
+              );
+              if (nextInput) nextInput.focus();
+              
+              // Check if puzzle is complete after each input
+              checkPuzzleCompletion();
+            }
+          });
+          
+          // Navigate with arrow keys
+          input.addEventListener('keydown', function(e) {
+            const row = parseInt(this.dataset.row);
+            const col = parseInt(this.dataset.col);
+            
+            let nextInput;
+            switch(e.key) {
+              case 'ArrowRight':
+                nextInput = inputs.find(inp => 
+                  parseInt(inp.dataset.row) === row && 
+                  parseInt(inp.dataset.col) === col + 1
+                );
+                break;
+              case 'ArrowLeft':
+                nextInput = inputs.find(inp => 
+                  parseInt(inp.dataset.row) === row && 
+                  parseInt(inp.dataset.col) === col - 1
+                );
+                break;
+              case 'ArrowDown':
+                nextInput = inputs.find(inp => 
+                  parseInt(inp.dataset.row) === row + 1 && 
+                  parseInt(inp.dataset.col) === col
+                );
+                break;
+              case 'ArrowUp':
+                nextInput = inputs.find(inp => 
+                  parseInt(inp.dataset.row) === row - 1 && 
+                  parseInt(inp.dataset.col) === col
+                );
+                break;
+            }
+            
+            if (nextInput) {
+              e.preventDefault();
+              nextInput.focus();
+            }
+          });
+          
+          cell.appendChild(input);
+          inputs.push(input);
+        }
+        
+        crosswordEl.appendChild(cell);
+      }
+    }
+    
+    // Function to check if puzzle is complete
+    function checkPuzzleCompletion() {
+      let isComplete = true;
+      inputs.forEach(input => {
+        if (input.value.toUpperCase() !== input.dataset.solution) {
+          isComplete = false;
+        }
+      });
+      
+      if (isComplete) {
+        document.getElementById('success-message').style.display = 'block';
+        // Show surprise with a slight delay for dramatic effect
+        setTimeout(showSurprise, 2000);
+      }
+    }
+    
+    // Function to create and animate floating hearts
+    function createFloatingHearts() {
+      const container = document.getElementById('surprise-container');
+      const containerWidth = container.offsetWidth;
+      
+      // Create 50 hearts
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.className = 'heart-animation';
+          heart.innerHTML = '❤️';
+          heart.style.left = Math.random() * containerWidth + 'px';
+          heart.style.animationDuration = (5 + Math.random() * 10) + 's';
+          heart.style.animationDelay = Math.random() * 5 + 's';
+          container.appendChild(heart);
+          
+          // Remove heart after animation completes
+          setTimeout(() => {
+            heart.remove();
+          }, 15000);
+        }, i * 200);
+      }
+    }
+    
+    // Function to show surprise
+    function showSurprise() {
+      document.getElementById('surprise-container').style.display = 'flex';
+      createFloatingHearts();
+      
+      // Play a celebratory sound
+      const audio = new Audio('https://cdnjs.cloudflare.com/ajax/libs/soundjs/1.0.1/assets/audio/TimingWin.mp3');
+      audio.play().catch(e => console.log('Could not play sound:', e));
+    }
+    
+    // Close surprise when button is clicked
+    document.getElementById('close-surprise').addEventListener('click', function() {
+      document.getElementById('surprise-container').style.display = 'none';
+    });
+    
+    // Check button functionality
+    document.getElementById('check-button').addEventListener('click', function() {
+      inputs.forEach(input => {
+        const cell = input.parentElement;
+        
+        // Remove previous incorrect mark if any
+        cell.classList.remove('incorrect');
+        
+        // Check if current value is wrong
+        if (input.value && input.value.toUpperCase() !== input.dataset.solution) {
+          cell.classList.add('incorrect');
+        }
+      });
+      
+      // Also check if puzzle is complete
+      checkPuzzleCompletion();
+    });
+    
+    // Reveal button functionality
+    document.getElementById('reveal-button').addEventListener('click', function() {
+      inputs.forEach(input => {
+        input.value = input.dataset.solution;
+        input.parentElement.classList.remove('incorrect');
+      });
+      
+      // Check completion to trigger surprise
+      checkPuzzleCompletion();
+    });
+    
+    // Clear button functionality
+    document.getElementById('clear-button').addEventListener('click', function() {
+      inputs.forEach(input => {
+        input.value = '';
+        input.parentElement.classList.remove('incorrect');
+      });
+      document.getElementById('success-message').style.display = 'none';
+    });
+    
+    // Auto-play music may be blocked by browsers, so we'll need a user interaction
+    document.addEventListener('click', function() {
+      const music = document.getElementById('background-music');
+      if (music.paused) {
+        music.play().catch(e => console.log('Auto-play prevented:', e));
+      }
+    }, {once: true});
+  </script>
+</body>
+</html>
