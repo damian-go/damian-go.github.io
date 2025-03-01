@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>I Love You, Addison</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    header {
+      background: linear-gradient(to right, #ff758c, #ff7eb3);
+      color: white;
+      text-align: center;
+      padding: 2rem 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+      font-style: italic;
+      font-weight: 300;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .intro {
+      text-align: center;
+      margin: 2rem 0 3rem;
+      font-size: 1.2rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .memories {
+      margin: 3rem 0;
+    }
+    
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    .memory-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .memory-card:hover {
+      transform: translateY(-10px);
+    }
+    
+    .memory-image {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .memory-content {
+      padding: 1.5rem;
+    }
+    
+    .memory-title {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+      color: #ff5e8a;
+    }
+    
+    .message-section {
+      background: linear-gradient(to right, #f6f0ff, #fff0f5);
+      padding: 3rem 0;
+      margin: 3rem 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .message {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 1.2rem;
+      line-height: 1.8;
+    }
+    
+    .signature {
+      margin-top: 2rem;
+      font-style: italic;
+      font-size: 1.4rem;
+      text-align: right;
+      color: #ff5e8a;
+    }
+    
+    .video-container {
+      max-width: 800px;
+      margin: 3rem auto;
+    }
+    
+    video {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .cta-button {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 12px 30px;
+      background: linear-gradient(to right, #ff758c, #ff7eb3);
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(255, 118, 140, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(255, 118, 140, 0.4);
+    }
+    
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      background-color: #333;
+      color: white;
+      margin-top: 3rem;
+    }
+    
+    .heart {
+      color: #ff5e8a;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .timeline {
+      position: relative;
+      max-width: 1200px;
+      margin: 3rem auto;
+    }
+    
+    .timeline::after {
+      content: '';
+      position: absolute;
+      width: 6px;
+      background-color: #ff5e8a;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      margin-left: -3px;
+      border-radius: 5px;
+    }
+    
+    .timeline-item {
+      padding: 10px 40px;
+      position: relative;
+      width: 50%;
+      box-sizing: border-box;
+    }
+    
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      background-color: white;
+      border: 4px solid #ff5e8a;
+      top: 15px;
+      border-radius: 50%;
+      z-index: 1;
+    }
+    
+    .left {
+      left: 0;
+    }
+    
+    .right {
+      left: 50%;
+    }
+    
+    .left::after {
+      right: -17px;
+    }
+    
+    .right::after {
+      left: -17px;
+    }
+    
+    .timeline-content {
+      padding: 20px 30px;
+      background-color: white;
+      position: relative;
+      border-radius: 6px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .timeline-content h3 {
+      color: #ff5e8a;
+      margin-bottom: 10px;
+    }
+    
+    .timeline-date {
+      font-style: italic;
+      color: #888;
+      margin-bottom: 15px;
+      display: block;
+    }
+    
+    /* Animation for the hearts */
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+    
+    .heart-container {
+      position: fixed;
+      bottom: -50px;
+      width: 100%;
+      height: 100px;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .floating-heart {
+      position: absolute;
+      bottom: 0;
+      font-size: 1.5rem;
+      color: #ff5e8a;
+      animation: float 15s ease-in infinite;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .memory-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .timeline::after {
+        left: 31px;
+      }
+      
+      .timeline-item {
+        width: 100%;
+        padding-left: 70px;
+        padding-right: 25px;
+      }
+      
+      .timeline-item::after {
+        left: 15px;
+      }
+      
+      .left::after, .right::after {
+        left: 15px;
+      }
+      
+      .right {
+        left: 0%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1>I Love You, Addison</h1>
+    <p class="subtitle">Our journey, our memories, our love.</p>
+  </header>
+  
+  <!-- Intro section -->
+  <div class="container">
+    <div class="intro">
+      <h2>You've Found The Surprise!</h2>
+      <p>Congratulations on solving the crossword puzzle. As you've discovered, each answer represents a special moment or thing we've shared together. This site is a celebration of our relationship and all the amazing memories we've created.</p>
+    </div>
+    
+    <!-- Timeline of our relationship -->
+    <h2>Our Journey Together</h2>
+    <div class="timeline">
+      <div class="timeline-item left">
+        <div class="timeline-content">
+          <h3>Where We Met</h3>
+          <span class="timeline-date">The Beginning</span>
+          <p>It all started at BRAVAS, where our paths first crossed. Little did I know that moment would change my life forever. Your smile caught my attention immediately.</p>
+        </div>
+      </div>
+      
+      <div class="timeline-item right">
+        <div class="timeline-content">
+          <h3>First Kiss</h3>
+          <span class="timeline-date">San Francisco</span>
+          <p>In the beautiful city of San Francisco, we shared our first kiss. The city lights sparkled almost as bright as your eyes. That night, our connection deepened into something beautiful.</p>
+        </div>
+      </div>
+      
+      <div class="timeline-item left">
+        <div class="timeline-content">
+          <h3>NERDLE</h3>
+          <span class="timeline-date">San Luis Obispo</span>
+          <p>Remember discovering that math game together in SLO? Our competitive spirits and mutual love for puzzles made for such fun memories. I love how we challenge each other.</p>
+        </div>
+      </div>
+      
+      <div class="timeline-item right">
+        <div class="timeline-content">
+          <h3>FINLAND</h3>
+          <span class="timeline-date">Our First Time</span>
+          <p>Finland will always hold a special place in my heart. That night we shared intimacy for the first time was beautiful and perfect because it was with you.</p>
+        </div>
+      </div>
+      
+      <div class="timeline-item left">
+        <div class="timeline-content">
+          <h3>MI AMOR</h3>
+          <span class="timeline-date">Your Gift</span>
+          <p>The cart you gave me means so much, not just because it was from you, but because of the name. You truly are "mi amor" - my love, my heart, my everything.</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Photo memories section -->
+    <div class="memories">
+      <h2>Our Special Moments</h2>
+      <div class="memory-grid">
+        <div class="memory-card">
+          <img src="/api/placeholder/400/320" alt="placeholder" class="memory-image">
+          <div class="memory-content">
+            <h3 class="memory-title">San Francisco Magic</h3>
+            <p>Our first kiss under the stars in San Francisco. A moment I'll cherish forever.</p>
+          </div>
+        </div>
+        
+        <div class="memory-card">
+          <img src="/api/placeholder/400/320" alt="placeholder" class="memory-image">
+          <div class="memory-content">
+            <h3 class="memory-title">Finland Adventure</h3>
+            <p>Discovering each other in new ways in Finland. A beautiful memory of our growing love.</p>
+          </div>
+        </div>
+        
+        <div class="memory-card">
+          <img src="/api/placeholder/400/320" alt="placeholder" class="memory-image">
+          <div class="memory-content">
+            <h3 class="memory-title">Watching REELS Together</h3>
+            <p>Countless evenings spent laughing and cuddling while watching reels. Simple moments that mean everything.</p>
+          </div>
+        </div>
+        
+        <div class="memory-card">
+          <img src="/api/placeholder/400/320" alt="placeholder" class="memory-image">
+          <div class="memory-content">
+            <h3 class="memory-title">Our Special Spot</h3>
+            <p>Our favorite little corner of the world where we can just be us, share a smoke, and talk for hours.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Personal message section -->
+    <div class="message-section">
+      <div class="message">
+        <h2>My Love Letter to You</h2>
+        <p>Addison,</p>
+        <br>
+        <p>From the moment we met at BRAVAS, I knew there was something special about you. Your smile, your laugh, the way you see the world - everything about you captivates me.</p>
+        <br>
+        <p>Every moment we've shared has been meaningful to me. From our first kiss in San Francisco to our intimate time in Finland, from playing NERDLE together to smoking and sharing quiet moments at our spot. I love watching REELS with you, feeling your warmth against me as we laugh together.</p>
+        <br>
+        <p>You bring joy to my life in ways I never thought possible. When you called me "mi amor" and gave me that cart, it meant the world to me because that's exactly what you are - my love, my heart.</p>
+        <br>
+        <p>I created this puzzle and this website because I wanted to celebrate all these memories in a way that's as unique as our relationship. Every answer in the crossword represents something that's made our journey together so special.</p>
+        <br>
+        <p>Thank you for being you. Thank you for all the CHANCES you've given me, for all the love you've shown me. I hope we continue creating beautiful memories together for years to come.</p>
+        <br>
+        <p>I love you more than words can say.</p>
+        <br>
+        <div class="signature">With all my heart,<br>Your POTATO ❤️</div>
+      </div>
+    </div>
+    
+    <!-- Optional video message - uncomment and add your video file path
+    <div class="video-container">
+      <h2>Watch My Message To You</h2>
+      <video controls>
+        <source src="your-video-file.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    -->
+    
+    <!-- CTA section -->
+    <div style="text-align: center;">
+      <h2>One More Request...</h2>
+      <p>I just want one more CHANCE. I promise you won't regret it.</p>
+      <a href="#" class="cta-button">Say Yes ❤️</a>
+    </div>
+  </div>
+  
+  <!-- Floating hearts animation -->
+  <div class="heart-container" id="heart-container"></div>
+  
+  <!-- Footer -->
+  <footer>
+    <p>Created with <span class="heart">❤️</span> for the love of my life.</p>
+  </footer>
+  
+  <script>
+    // Create floating hearts
+    const heartContainer = document.getElementById('heart-container');
+    const screenWidth = window.innerWidth;
+    
+    function createHearts() {
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.className = 'floating-heart';
+          heart.innerHTML = '❤️';
+          heart.style.left = Math.random() * screenWidth + 'px';
+          heart.style.opacity = Math.random() * 0.5 + 0.5;
+          heart.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+          heart.style.animationDuration = (10 + Math.random() * 20) + 's';
+          heartContainer.appendChild(heart);
+          
+          // Remove heart after animation completes
+          setTimeout(() => {
+            heart.remove();
+          }, 30000);
+        }, i * 1000);
+      }
+    }
+    
+    // Start creating hearts
+    createHearts();
+    
+    // Continue creating hearts every 20 seconds
+    setInterval(createHearts, 20000);
+    
+    // Optional: Add click event to CTA button (customize this based on your needs)
+    document.querySelector('.cta-button').addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('I love you, Addison! Thank you for saying yes! ❤️');
+    });
+  </script>
+</body>
+</html>
